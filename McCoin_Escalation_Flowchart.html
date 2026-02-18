@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McCoin Escalation Framework - Visual Flowchart</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
+        
+        :root {
+            --primary: #028090;
+            --secondary: #00A896;
+            --accent: #02C39A;
+            --dark: #1E2761;
+            --light: #F5F5F5;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --success: #10B981;
+            --white: #FFFFFF;
+            --text: #2D3748;
+            --text-light: #64748B;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 3rem 3rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(2,195,154,0.2) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Legend */
+        .legend {
+            background: var(--light);
+            padding: 1.5rem 3rem;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .legend-box {
+            width: 40px;
+            height: 28px;
+            border-radius: 6px;
+            border: 2px solid;
+        }
+        
+        .legend-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        /* Main Flow Area */
+        .flow-container {
+            padding: 3rem;
+            position: relative;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 0;
+        }
+        
+        .tab {
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            bottom: -2px;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .tab:hover {
+            color: var(--primary);
+        }
+        
+        .flow-view {
+            display: none;
+            animation: fadeIn 0.4s;
+        }
+        
+        .flow-view.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Flow Nodes */
+        .flow-step {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .node {
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            border: 2px solid;
+            position: relative;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        
+        /* Node Types */
+        .node-entry {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            border-color: var(--dark);
+            color: white;
+        }
+        
+        .node-l1 {
+            background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+            border-color: var(--success);
+            color: var(--text);
+        }
+        
+        .node-l2 {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            border-color: var(--warning);
+            color: var(--text);
+        }
+        
+        .node-l3 {
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+            border-color: var(--primary);
+            color: var(--text);
+        }
+        
+        .node-l4 {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border-color: var(--danger);
+            color: var(--text);
+        }
+        
+        .node-decision {
+            background: white;
+            border-color: var(--secondary);
+            border-style: dashed;
+        }
+        
+        .node-crisis {
+            background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
+            border-color: #991b1b;
+            color: white;
+        }
+        
+        /* Node Content */
+        .node-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .node-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .node-badge {
+            background: rgba(0,0,0,0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .node-entry .node-badge {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .node-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .node-content ul {
+            list-style: none;
+            margin-top: 0.5rem;
+        }
+        
+        .node-content li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.4rem;
+        }
+        
+        .node-content li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        
+        .node-entry .node-content li::before {
+            color: var(--accent);
+        }
+        
+        /* Metrics */
+        .metrics {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .node-entry .metrics {
+            border-top-color: rgba(255,255,255,0.2);
+        }
+        
+        .metric {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .metric-label {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* Connector */
+        .connector {
+            text-align: center;
+            padding: 1rem 0;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        
+        .connector-split {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            padding: 1rem 0;
+        }
+        
+        .connector-label {
+            background: var(--light);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        /* Grid Layout for Split Flows */
+        .split-flow {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+        
+        /* Overlay System */
+        .overlay-section {
+            background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 2px solid var(--success);
+        }
+        
+        .overlay-section h3 {
+            color: var(--success);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .overlay-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .overlay-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #86EFAC;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        
+        .overlay-card h4 {
+            color: var(--text);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        .overlay-card ul {
+            list-style: none;
+        }
+        
+        .overlay-card li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .overlay-card li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: 700;
+        }
+        
+        /* Crisis Mode Specific */
+        .crisis-alert {
+            background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 2px solid #991b1b;
+        }
+        
+        .crisis-alert h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+        
+        .crisis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .crisis-step {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .crisis-step h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .split-flow {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .flow-container {
+                padding: 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .header {
+                padding: 2rem 1.5rem;
+            }
+            
+            .legend {
+                padding: 1rem 1.5rem;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+            
+            .overlay-grid,
+            .crisis-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>McCoin Escalation Framework</h1>
+            <p>Operational Flowchart - Customer Support & Compliance Routing</p>
+        </div>
+        
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); border-color: var(--dark);"></div>
+                <span class="legend-text">Entry Point</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border-color: var(--success);"></div>
+                <span class="legend-text">L1 Frontline</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-color: var(--warning);"></div>
+                <span class="legend-text">L2 Specialist</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); border-color: var(--primary);"></div>
+                <span class="legend-text">L3 CX Protection</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); border-color: var(--danger);"></div>
+                <span class="legend-text">L4 Compliance/Legal</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: white; border-color: var(--secondary); border-style: dashed;"></div>
+                <span class="legend-text">Decision Point</span>
+            </div>
+        </div>
+        
+        <!-- Flow Container -->
+        <div class="flow-container">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('normal')">Normal Operations</button>
+                <button class="tab" onclick="switchTab('segment')">Segment Overlay</button>
+                <button class="tab" onclick="switchTab('crisis')">Crisis Mode</button>
+            </div>
+            
+            <!-- Normal Operations Flow -->
+            <div id="normal-flow" class="flow-view active">
+                <!-- Entry Point -->
+                <div class="flow-step">
+                    <div class="node node-entry">
+                        <div class="node-header">
+                            <div class="node-title">
+                                <span>STEP 0: Entry Point</span>
+                                <span class="node-badge">AUTO</span>
+                            </div>
+                        </div>
+                        <div class="node-content">
+                            <strong>Customer Inquiry Received</strong>
+                            <ul>
+                                <li>Channel: In-App Chat / Email / Web Form / VIP Direct Line</li>
+                                <li>Auto-tag by CRM: Segment, Issue Type, Severity</li>
+                                <li>Owner: CRM Automation + L1 Agent</li>
+                            </ul>
+                        </div>
+                        <div class="metrics">
+                            <div class="metric">
+                                <span class="metric-label">FRT Target</span>
+                                <span class="metric-value">≤ 1 min</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="connector">↓</div>
+                
+                <!-- L1 Frontline -->
+                <div class="flow-step">
+                    <div class="node node-l1">
+                        <div class="node-header">
+                            <div class="node-title">
+                                <span>STEP 1: L1 Frontline Resolution</span>
+                                <span class="node-badge">75-80% GOAL</span>
+                            </div>
+                        </div>
+                        <div class="node-content">
+                            <strong>L1 Agent Reviews Case</strong>
+                            <ul>
+                                <li>Check: FAQ/Macro available?</li>
+                                <li>Check: Status tracker resolves?</li>
+                                <li>Check: Basic troubleshooting works?</li>
+                            </ul>
+                        </div>
+                        <div class="metrics">
+                            <div class="metric">
+                                <span class="metric-label">Beginner</span>
+                                <span class="metric-value">≤ 5 min</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Intermediate</span>
+                                <span class="metric-value">≤ 7 min</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Pro</span>
+                                <span class="metric-value">≤ 10 min</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">VIP</span>
+                                <span class="metric-value">Fast Lane</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="connector-split">
+                    <span class="connector-label">Resolved?</span>
+                    <span style="font-size: 1.5rem;">→</span>
+                </div>
+                
+                <div class="split-flow">
+                    <div class="node node-decision">
+                        <div class="node-title">✓ YES: Close Ticket</div>
+                        <div class="node-content" style="margin-top: 0.75rem;">
+                            <ul>
+                                <li>Log resolution</li>
+                                <li>Tag issue type</li>
+                                <li>End flow</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="node node-decision">
+                        <div class="node-title">✗ NO: Escalate to L2</div>
+                        <div class="node-content" style="margin-top: 0.75rem;">
+                            <ul>
+                                <li>Route by issue type</li>
+                                <li>Auto-assign specialist</li>
+                                <li>Continue flow ↓</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="connector">↓</div>
+                
+                <!-- L2 Specialist -->
+                <div class="flow-step">
+                    <div class="node node-l2">
+                        <div class="node-header">
+                            <div class="node-title">
+                                <span>STEP 2: L2 Specialist Layer</span>
+                                <span class="node-badge">TECHNICAL</span>
+                            </div>
+                        </div>
+                        <div class="node-content">
+                            <strong>Triggered When:</strong>
+                            <ul>
+                                <li>Withdrawal beyond normal SLA</li>
+                                <li>KYC pending beyond expected time</li>
+                                <li>Order execution dispute</li>
+                                <li>Account flagged (non-AML)</li>
+                                <li>System error</li>
+                            </ul>
+                            <strong style="margin-top: 1rem; display: block;">L2 investigates backend (blockchain TX, liquidity, KYC status, risk flags)</strong>
+                        </div>
+                        <div class="metrics">
+                            <div class="metric">
+                                <span class="metric-label">Trading Issue</span>
+                                <span class="metric-value">≤ 2 hrs</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Withdrawal</span>
+                                <span class="metric-value">≤ 4 hrs</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">KYC Review</span>
+                                <span class="metric-value">≤ 24 hrs</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">VIP</span>
+                                <span class="metric-value">≤ 1 hr</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="connector-split">
+                    <span class="connector-label">Within Authority?</span>
+                    <span style="font-size: 1.5rem;">→</span>
+                </div>
+                
+                <div class="split-flow">
+                    <div class="node node-decision">
+                        <div class="node-title">✓ YES: Resolve & Update User</div>
+                        <div class="node-content" style="margin-top: 0.75rem;">
+                            <ul>
+                                <li>Fix issue</li>
+                                <li>Provide structured status + ETA</li>
+                                <li>No vague wording</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="node node-decision">
+                        <div class="node-title">✗ NO: Escalate to L3</div>
+                        <div class="node-content" style="margin-top: 0.75rem;">
+                            <ul>
+                                <li>Beyond L2 authority</li>
+                                <li>Emotional escalation</li>
+                                <li>Continue flow ↓</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="connector">↓</div>
+                
+                <!-- L3 CX Protection -->
+                <div class="flow-step">
+                    <div class="node node-l3">
+                        <div class="node-header">
+                            <div class="node-title">
+                                <span>STEP 3: L3 Experience Protection Layer</span>
+                                <span class="node-badge">CX MANAGER</span>
+                            </div>
+                        </div>
+                        <div class="node-content">
+                            <strong>Triggered When:</strong>
+                            <ul>
+                                <li>Case unresolved beyond L2 SLA</li>
+                                <li>Emotional escalation / Social media risk</li>
+                                <li>VIP dissatisfaction</li>
+                                <li>Account restriction dispute</li>
+                                <li>Revenue risk case</li>
+                            </ul>
+                            <strong style="margin-top: 1rem; display: block;">CX Manager reviews full case → Direct outreach (call for VIP) → Clear explanation + compensation decision</strong>
+                        </div>
+                        <div class="metrics">
+                            <div class="metric">
+                                <span class="metric-label">Standard</span>
+                                <span class="metric-value">≤ 24 hrs</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">High Emotional/VIP</span>
+                                <span class="metric-value">≤ 4-8 hrs</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="connector-split">
+                    <span class="connector-label">Regulatory/AML/Legal?</span>
+                    <span style="font-size: 1.5rem;">→</span>
+                </div>
+                
+                <div class="split-flow">
+                    <div class="node node-decision">
+                        <div class="node-title">✗ NO: Resolve & Close</div>
+                        <div class="node-content" style="margin-top: 0.75rem;">
+                            <ul>
+                                <li>CX resolution applied</li>
+                                <li>Compensation if applicable</li>
+                                <li>Case closed with audit log</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="node node-decision">
+                        <div class="node-title">✓ YES: Escalate to L4</div>
+                        <div class="node-content" style="margin-top: 0.75rem;">
+                            <ul>
+                                <li>Formal complaint</li>
+                                <li>AML/Sanctions issue</li>
+                                <li>Continue flow ↓</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="connector">↓</div>
+                
+                <!-- L4 Compliance -->
+                <div class="flow-step">
+                    <div class="node node-l4">
+                        <div class="node-header">
+                            <div class="node-title">
+                                <span>STEP 4: L4 Compliance / Regulatory</span>
+                                <span class="node-badge">COMPLIANCE/MLRO</span>
+                            </div>
+                        </div>
+                        <div class="node-content">
+                            <strong>Triggered When:</strong>
+                            <ul>
+                                <li>Formal complaint filed</li>
+                                <li>AML freeze required</li>
+                                <li>Sanctions screening flag</li>
+                                <li>Legal dispute</li>
+                                <li>Regulator request</li>
+                            </ul>
+                            <strong style="margin-top: 1rem; display: block;">Process:</strong>
+                            <ul>
+                                <li>Formal acknowledgment ≤ 24 hrs</li>
+                                <li>Investigation opened</li>
+                                <li>Regulatory-compliant response (≤30 days)</li>
+                                <li>Final written outcome</li>
+                                <li>All actions logged (audit trail mandatory)</li>
+                            </ul>
+                        </div>
+                        <div class="metrics">
+                            <div class="metric">
+                                <span class="metric-label">Acknowledgment</span>
+                                <span class="metric-value">≤ 24 hrs</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Resolution</span>
+                                <span class="metric-value">≤ 30 days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Segment Overlay Flow -->
+            <div id="segment-flow" class="flow-view">
+                <div class="overlay-section">
+                    <h3>🎯 Segment-Based Routing Overlay</h3>
+                    <p style="margin-bottom: 1rem; color: var(--text-light);">This layer sits on top of the main escalation flow, adapting behavior based on user segment.</p>
+                    
+                    <div class="overlay-grid">
+                        <!-- Beginner -->
+                        <div class="overlay-card">
+                            <h4>🌱 Beginner Retail</h4>
+                            <ul>
+                                <li>Use simplified language</li>
+                                <li>Check if first deposit/withdrawal</li>
+                                <li>Provide reassurance script</li>
+                                <li>Proactive follow-up after resolution</li>
+                                <li>Auto-trigger on first-time events</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Intermediate -->
+                        <div class="overlay-card">
+                            <h4>📊 Intermediate Trader</h4>
+                            <ul>
+                                <li>Check trading execution issues first</li>
+                                <li>Provide clear technical explanation</li>
+                                <li>Faster L2 escalation if needed</li>
+                                <li>Balance education with efficiency</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Pro -->
+                        <div class="overlay-card">
+                            <h4>⚡ Pro/Active Trader</h4>
+                            <ul>
+                                <li>Skip generic troubleshooting</li>
+                                <li>Escalate to specialist faster</li>
+                                <li>Provide technical log transparency</li>
+                                <li>Minimal hand-holding</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- VIP -->
+                        <div class="overlay-card">
+                            <h4>👑 VIP Fast Lane</h4>
+                            <ul>
+                                <li>Skip L1 queue entirely</li>
+                                <li>Immediate L2 specialist assignment</li>
+                                <li>Dedicated Account Manager notified</li>
+                                <li>No scripted replies</li>
+                                <li>Direct escalation visibility</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem; padding: 1.5rem; background: var(--light); border-radius: 12px;">
+                    <h4 style="margin-bottom: 1rem; color: var(--text);">Implementation Note</h4>
+                    <p style="color: var(--text-light); line-height: 1.6;">
+                        The segment overlay modifies <strong>tone, speed, and escalation triggers</strong> but doesn't change the core L1→L2→L3→L4 flow. 
+                        CRM should auto-detect segment on entry and apply appropriate routing logic at each decision point.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Crisis Mode Flow -->
+            <div id="crisis-flow" class="flow-view">
+                <div class="crisis-alert">
+                    <h3>🚨 Crisis Mode Override Flow</h3>
+                    <p>Activated when: Market crash, System outage, Liquidity congestion, Mass withdrawal spike</p>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="node node-crisis">
+                        <div class="node-header">
+                            <div class="node-title">
+                                <span>Crisis Trigger Activated</span>
+                                <span class="node-badge">OVERRIDE</span>
+                            </div>
+                        </div>
+                        <div class="node-content">
+                            <strong>System Flag: Crisis Command Mode ON</strong>
+                            <ul>
+                                <li>All tickets auto-tagged "CRISIS"</li>
+                                <li>Standard SLAs suspended</li>
+                                <li>Crisis playbook activated</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="connector">↓</div>
+                
+                <div class="crisis-grid">
+                    <div class="crisis-step">
+                        <h4>L1: Reassurance Focus</h4>
+                        <ul style="list-style: none; padding: 0; margin-top: 0.5rem;">
+                            <li style="margin-bottom: 0.3rem; font-size: 0.9rem;">→ Reassurance only</li>
+                            <li style="margin-bottom: 0.3rem; font-size: 0.9rem;">→ Direct to status page</li>
+                            <li style="margin-bottom: 0.3rem; font-size: 0.9rem;">→ Use pre-approved scripts</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="crisis-step">
+                        <h4>L2: System Stabilization</h4>
+                        <ul style="list-style: none; padding: 0; margin-top: 0.5rem;">
+                            <li style="margin-bottom: 0.3rem; font-size: 0.9rem;">→ Focus on system stability</li>
+                            <li style="margin-bottom: 0.3rem; font-size: 0.9rem;">→ Defer non-critical cases</li>
+                            <li style="margin-bottom: 0.3rem; font-size: 0.9rem;">→ Monitor critical transactions</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="crisis-step">
+                        <h4>L3: VIP Monitoring</h4>
+                        <ul style="list-style: none; padding: 0; margin-top: 0.5rem;">
+                            <li style="margin-bottom: 0.3rem; font-size: 0.9rem;">→ Manual VIP case review</li>
+                            <li style="margin-bottom: 0.3rem; font-size: 0.9rem;">→ High-value account protection</li>
+                            <li style="margin-bottom: 0.3rem; font-size: 0.9rem;">→ Direct communication</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="crisis-step">
+                        <h4>Public Communication</h4>
+                        <ul style="list-style: none; padding: 0; margin-top: 0.5rem;">
+                            <li style="margin-bottom: 0.3rem; font-size: 0.9rem;">→ Banner + Email ≤ 30 min</li>
+                            <li style="margin-bottom: 0.3rem; font-size: 0.9rem;">→ Status update every 30 min</li>
+                            <li style="margin-bottom: 0.3rem; font-size: 0.9rem;">→ Transparency priority</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="connector">↓</div>
+                
+                <div class="flow-step">
+                    <div class="node" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); border-color: #047857; color: white;">
+                        <div class="node-header">
+                            <div class="node-title">
+                                <span>System Stable: Return to Normal Flow</span>
+                                <span class="node-badge">RESUME</span>
+                            </div>
+                        </div>
+                        <div class="node-content">
+                            <ul>
+                                <li>Crisis flag removed</li>
+                                <li>Resume standard L1→L2→L3→L4 flow</li>
+                                <li>Process queued tickets with updated SLAs</li>
+                                <li>Send post-crisis communication</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem; padding: 1.5rem; background: #FEF3C7; border-radius: 12px; border: 2px solid var(--warning);">
+                    <h4 style="margin-bottom: 1rem; color: var(--text);">⚠️ Crisis Mode Best Practices</h4>
+                    <ul style="color: var(--text-light); line-height: 1.8;">
+                        <li>Pre-approved messaging templates required (no improvisation)</li>
+                        <li>Status page becomes single source of truth</li>
+                        <li>All team members briefed on crisis playbook in advance</li>
+                        <li>Post-crisis review mandatory within 48 hours</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function switchTab(tabName) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all flow views
+            document.querySelectorAll('.flow-view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Show corresponding flow view
+            document.getElementById(tabName + '-flow').classList.add('active');
+        }
+    </script>
+</body>
+</html>
